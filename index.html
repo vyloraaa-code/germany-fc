@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Freecash — Verdiene beim Spielen</title>
+
+  <style>
+    :root {
+      --bg:#090c0b;
+      --panel:#141615;
+      --line:#303432;
+      --text:#f7f7f7;
+      --muted:#a8ada9;
+      --green:#00ed85;
+    }
+
+    * { box-sizing:border-box; margin:0; padding:0; }
+
+    body {
+      min-height:100vh;
+      background:#090c0b;
+      color:var(--text);
+      font-family:Arial, Helvetica, sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    /* ================= PRELANDER ================= */
+    .prelander {
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      background:#000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .prelander-content {
+      width:100%;
+      max-width:420px;
+      text-align:center;
+      color:#fff;
+    }
+
+    .prelander-title {
+      font-size:54px;
+      line-height:1.08;
+      font-weight:900;
+      letter-spacing:-1.5px;
+      margin-bottom:28px;
+    }
+
+    .prelander-copy {
+      font-size:22px;
+      line-height:1.45;
+      color:#d0d0d0;
+      margin-bottom:70px;
+    }
+
+    .prelander-arrows {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+      margin-bottom:70px;
+    }
+
+    .prelander-arrows span {
+      width:28px;
+      height:28px;
+      border-right:5px solid #00b5ff;
+      border-bottom:5px solid #00b5ff;
+      transform:rotate(45deg);
+      display:block;
+    }
+
+    .prelander-arrows span:nth-child(2) { opacity:.7; }
+    .prelander-arrows span:nth-child(3) { opacity:.45; }
+
+    .prelander-btn {
+      width:100%;
+      height:72px;
+      border:0;
+      border-radius:18px;
+      background:#ff1f2d;
+      color:#fff;
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:1px;
+      cursor:pointer;
+      box-shadow:0 12px 34px rgba(255,31,45,.35);
+    }
+
+    .prelander-btn:active {
+      transform:scale(.985);
+    }
+
+    /* hide real lander initially */
+    body.prelander-active .site,
+    body.prelander-active .sticky {
+      display:none;
+    }
+
+    /* ================= LANDER ================= */
+    .site {
+      width:100%;
+      max-width:390px;
+      margin:0 auto;
+      padding-bottom:104px;
+    }
+
+    .hero-card,
+    .offer-card {
+      background:linear-gradient(180deg,#171918,#121413);
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:0 18px 40px rgba(0,0,0,.34);
+      margin:14px;
+    }
+
+    .hero-card {
+      text-align:center;
+      padding:30px 20px 24px;
+    }
+
+    .app-logo img {
+      width:86px;
+      height:86px;
+      border-radius:18px;
+      object-fit:cover;
+      box-shadow:0 0 22px rgba(0,237,133,.22);
+    }
+
+    .store-pill {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid #007a4b;
+      border-radius:999px;
+      padding:6px 12px;
+      margin:16px 0;
+      font-size:12px;
+      background:rgba(0,80,50,.14);
+    }
+
+    .stars { color:var(--green); font-weight:900; }
+
+    h1 {
+      font-size:32px;
+      line-height:1.1;
+      margin-bottom:14px;
+    }
+
+    h1 span {
+      color:var(--green);
+      display:block;
+    }
+
+    .lead {
+      max-width:300px;
+      margin:0 auto 18px;
+      font-size:15px;
+      line-height:1.5;
+      color:#b8bcc1;
+    }
+
+    .live-pill {
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      border:1px solid #17613f;
+      border-radius:999px;
+      padding:7px 12px;
+      font-size:12px;
+      background:#10251c;
+    }
+
+    .pulse {
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 10px var(--green);
+    }
+
+    .offer-card {
+      padding:20px 16px 22px;
+    }
+
+    .game-head {
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      padding-bottom:18px;
+      border-bottom:1px solid #2d302f;
+    }
+
+    .game-icon {
+      width:62px;
+      height:62px;
+      border-radius:14px;
+      object-fit:cover;
+    }
+
+    .game-meta h2 {
+      font-size:18px;
+      margin-bottom:6px;
+    }
+
+    .rating-line {
+      font-size:11px;
+      color:#c5c8c7;
+      margin-bottom:6px;
+    }
+
+    .rate {
+      font-size:11px;
+      font-weight:800;
+      color:var(--green);
+    }
+
+    .how {
+      margin-top:20px;
+      color:#8c9590;
+      letter-spacing:1px;
+      font-size:10px;
+      font-weight:800;
+    }
+
+    .steps {
+      margin-top:14px;
+      display:grid;
+      gap:10px;
+    }
+
+    .step {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      font-weight:700;
+      line-height:1.35;
+    }
+
+    .num {
+      width:24px;
+      height:24px;
+      border-radius:7px;
+      background:#073c2a;
+      border:1px solid #0c7650;
+      color:var(--green);
+      display:grid;
+      place-items:center;
+      font-size:11px;
+      flex:0 0 auto;
+    }
+
+    .stats {
+      margin:14px;
+      background:#111216;
+      border:1px solid #282d34;
+      border-radius:14px;
+      padding:16px 8px;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      text-align:center;
+    }
+
+    .stat + .stat {
+      border-left:1px solid #2b2f34;
+    }
+
+    .stat b {
+      display:block;
+      font-size:17px;
+      margin-bottom:5px;
+    }
+
+    .stat span {
+      display:block;
+      font-size:9px;
+      color:#87909e;
+      letter-spacing:.5px;
+    }
+
+    .legal {
+      padding:20px 16px 10px;
+      text-align:center;
+      color:#7f8783;
+      font-size:11px;
+      line-height:1.5;
+    }
+
+    .links {
+      text-align:center;
+      color:#808785;
+      font-size:11px;
+      padding-bottom:20px;
+    }
+
+    .links i {
+      font-style:normal;
+      color:#3f4542;
+      padding:0 8px;
+    }
+
+    .sticky {
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      background:rgba(11,13,14,.97);
+      border-top:1px solid #272b2f;
+      padding:10px 14px calc(12px + env(safe-area-inset-bottom));
+      box-shadow:0 -12px 32px rgba(0,0,0,.5);
+    }
+
+    .sticky-inner {
+      max-width:364px;
+      margin:0 auto;
+    }
+
+    .available {
+      text-align:center;
+      color:#b2b6ba;
+      font-size:11px;
+      margin-bottom:10px;
+    }
+
+    .buttons {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    .store-btn {
+      height:50px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid #3a3f47;
+      background:#16171d;
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .store-btn.google {
+      border-color:#00db79;
+      background:linear-gradient(135deg,#00f08b,#00d477);
+      color:#00170d;
+    }
+
+    @media (max-width:480px) {
+      .prelander-title { font-size:42px; }
+      .prelander-copy { font-size:18px; }
+      .prelander-btn { height:64px; font-size:21px; }
+    }
+  </style>
+</head>
+
+<body class="prelander-active">
+
+  <!-- ================= PRELANDER ================= -->
+  <section class="prelander" id="prelander">
+    <div class="prelander-content">
+      <h1 class="prelander-title">Im Browser öffnen</h1>
+
+      <p class="prelander-copy">
+        Öffnen Sie diese Seite in Ihrem Browser,
+        um fortzufahren.
+      </p>
+
+      <div class="prelander-arrows" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <button type="button" class="prelander-btn" id="prelander-btn">
+        JETZT ÖFFNEN
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= REAL LANDER ================= -->
+  <div class="site">
+
+    <section class="hero-card">
+      <div class="app-logo">
+        <img src="fc logo.png" alt="Freecash logo" />
+      </div>
+
+      <div class="store-pill">
+        <span class="stars">★★★★★</span>
+        <b>4.7</b>
+        <span>· App Store (50.000+ Bewertungen)</span>
+      </div>
+
+      <h1>Verdiene Geld <span>beim Spielen</span></h1>
+
+      <p class="lead">
+        Verdiene echtes Geld, indem du spielst, Aufgaben erledigst und Apps ausprobierst.
+        Lass dir deine Einnahmen jederzeit auszahlen – ohne Mindestbetrag.
+      </p>
+
+      <div class="live-pill">
+        <span class="pulse"></span>
+        <span><strong>1.849</strong> Personen verdienen gerade Geld</span>
+      </div>
+    </section>
+
+    <section class="offer-card">
+      <div class="game-head">
+        <img class="game-icon" src="gardenscapes.png" alt="Gardenscapes">
+
+        <div class="game-meta">
+          <h2>Gardenscapes</h2>
+          <div class="rating-line">
+            <span class="stars">★★★★★</span> 4.8 · Top bewertet
+          </div>
+          <div class="rate">Verdienst: 105 €/Std.</div>
+        </div>
+      </div>
+
+      <div class="how">SO FUNKTIONIERT ES</div>
+
+      <div class="steps">
+        <div class="step">
+          <span class="num">1</span>
+          <span>Melde dich bei Freecash an (wähle 21+)</span>
+        </div>
+
+        <div class="step">
+          <span class="num">2</span>
+          <span>Spiele und erledige Aufgaben</span>
+        </div>
+
+        <div class="step">
+          <span class="num">3</span>
+          <span>Lass dir dein Geld über PayPal, Visa oder Krypto auszahlen</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <b>100 M€+</b>
+        <span>AUSGEZAHLT</span>
+      </div>
+
+      <div class="stat">
+        <b>4.7★</b>
+        <span>BEWERTUNG</span>
+      </div>
+
+      <div class="stat">
+        <b>0 €</b>
+        <span>ZUM MITMACHEN</span>
+      </div>
+    </section>
+
+    <p class="legal">
+      Verfügbarkeit, Belohnungen und Anforderungen können je nach Nutzer, Standort und
+      abgeschlossener Aufgabe variieren. Ergebnisse sind nicht garantiert und hängen von der
+      individuellen Teilnahme ab.
+    </p>
+
+    <div class="links">
+      <a href="#">Datenschutz</a>
+      <i>·</i>
+      <a href="#">Allgemeine Geschäftsbedingungen</a>
+    </div>
+  </div>
+
+  <div class="sticky">
+    <div class="sticky-inner">
+      <div class="available">Jetzt für iOS und Android verfügbar</div>
+
+      <div class="buttons">
+        <button class="store-btn" onclick="window.location.href='https://www.stw4c9hx.com/DFBHL1/K9TM4Q/?source_id=musan'">
+          App Store
+        </button>
+
+        <button class="store-btn google" onclick="window.location.href='https://www.stw4c9hx.com/DFBHL1/K9TM4Q/?source_id=musan'">
+          Google Play
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== PRELANDER LOGIC =====
+    const prelander = document.getElementById("prelander");
+    const prelanderBtn = document.getElementById("prelander-btn");
+
+    prelanderBtn.addEventListener("click", function () {
+      prelander.style.display = "none";
+      document.body.classList.remove("prelander-active");
+      window.scrollTo(0, 0);
+    });
+  </script>
+</body>
+</html>
